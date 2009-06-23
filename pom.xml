@@ -8,7 +8,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>promoted-builds-2</artifactId>
+    <artifactId>promoted-builds-simple</artifactId>
     <packaging>hpi</packaging>
     <name>Promoted Builds (Simple)</name>
     <version>1.0-SNAPSHOT</version>
