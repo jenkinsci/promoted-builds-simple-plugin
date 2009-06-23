@@ -1,0 +1,18 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <f:section title="${%Promoted Builds}">
+    <f:entry title="${%Promotion Levels}" help="/plugin/promoted-builds-simple/help-plugin.html"
+             description="${%List of promotion levels that may be assigned to builds}">
+      <f:repeatable var="level" items="${it.levels}" name="levels" add="${%Add Level}">
+        <table>
+          <f:entry title="${%Name}">
+            <f:textbox name="name" value="${level.name}"/>
+          </f:entry>
+          <f:entry title="${%Icon}" help="/plugin/promoted-builds-simple/help-icon.html">
+            <f:textbox name="icon" value="${level.icon}"/>
+          </f:entry>
+          <f:entry><f:repeatableDeleteButton/></f:entry>
+        </table>
+      </f:repeatable>
+    </f:entry>
+  </f:section>
+</j:jelly>

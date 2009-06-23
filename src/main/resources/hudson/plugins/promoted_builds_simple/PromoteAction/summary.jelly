@@ -1,0 +1,42 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:getStatic var="updateRun" className="hudson.model.Run" field="UPDATE"/>
+<j:set var="canPromote" value="${h.hasPermission(it.project,updateRun)}"/>
+<j:set var="hasLevel" value="${it.level != null}"/>
+<j:if test="${canPromote or hasLevel}">
+  <t:summary icon="${h.ifThenElse(hasLevel,'star-gold.gif','star.gif')}">
+    <j:if test="${hasLevel}"><h4>${it.level}</h4></j:if>
+    <j:if test="${canPromote}">
+      <div id="promotemenu" class="yuimenu" style="width:16em">
+        <div class="bd"></div>
+      </div>
+      <script language="javascript">// &lt;![CDATA[
+      YAHOO.util.Event.onContentReady("promotemenu", function () {
+        var promoteMenu = new YAHOO.widget.Menu("promotemenu",
+          {
+            position: "static",
+            hidedelay: 750,
+            lazyload: true,
+            effect: {
+                effect: YAHOO.widget.ContainerEffect.FADE,
+                duration: 0.25
+            },
+            itemdata: [ { text: "${%Promote Build}",
+                          submenu: { id: "promotechoices", itemdata: [
+                      <j:if test="${hasLevel}">
+                            { text: "${%None}", url: "promote/?level=0" },
+                      </j:if>
+                      <j:forEach var="level" indexVar="i" items="${it.allPromotionLevels}">
+                            { text: "${level.name}", url: "promote/?level=${i+1}"
+                              <j:if test="${it.level == level.name}">, checked: true</j:if> },
+                      </j:forEach>
+                          ] }
+                        } ]
+          }
+        );
+        promoteMenu.render();
+      });
+      // ]]&gt;</script>
+    </j:if>
+  </t:summary>
+</j:if>
+</j:jelly>
