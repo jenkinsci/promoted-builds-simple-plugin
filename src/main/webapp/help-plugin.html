@@ -7,7 +7,8 @@
   The promotion level and a numeric index value from the list above are made
   available in the remote API, so queries may be done for particular promotion
   levels.  Example: <br/>
-  <tt>http://my-hudson/job/MyJob/api/xml?xpath=*/build[action/levelValue&gt;=2][1]</tt><br/>
+  <tt>http://my-hudson/job/MyJob/api/xml?xpath=*/build[action/levelValue&gt;=2][1]&amp;depth=1</tt>
+  <br/>
   This query finds the latest build promoted to the second or higher level.
   <p/>
   All builds run after this plugin is installed will be promotable.  To enable the

@@ -41,7 +41,7 @@ import org.kohsuke.stapler.export.ExportedBean;
  * Store promotion level for a build.
  * @author Alan.Harder@sun.com
  */
-@ExportedBean
+@ExportedBean(defaultVisibility=2)
 public class PromoteAction implements BuildBadgeAction {
     private String level, icon;
     private int levelValue;
