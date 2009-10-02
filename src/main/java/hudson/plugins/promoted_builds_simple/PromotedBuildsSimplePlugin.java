@@ -23,9 +23,9 @@
  */
 package hudson.plugins.promoted_builds_simple;
 
+import hudson.Extension;
 import hudson.Plugin;
 import hudson.model.Descriptor.FormException;
-import hudson.model.Hudson;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -36,8 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Simply add a link in the main page sidepanel.
@@ -52,33 +52,31 @@ public class PromotedBuildsSimplePlugin extends Plugin {
 	levels.add(new PromotionLevel("QA approved", "qa-green.gif"));
 	levels.add(new PromotionLevel("GA release", "ga.gif"));
 	load();
-	new PromotedBuildsRunListener().register();
     }
 
     public List<PromotionLevel> getLevels() { return levels; }
 
-    @Override public void configure(JSONObject formData)
+    @Override public void configure(StaplerRequest req, JSONObject formData)
 	    throws IOException, ServletException, FormException {
 	levels.clear();
-	levels.addAll(Stapler.getCurrentRequest().bindJSONToList(
-	    PromotionLevel.class, formData.get("levels")));
+	levels.addAll(req.bindJSONToList(PromotionLevel.class, formData.get("levels")));
 	save();
     }
 
-    public void doMakePromotable() throws IOException {
-	StaplerRequest req = Stapler.getCurrentRequest();
+    public void doMakePromotable(StaplerRequest req, StaplerResponse rsp) throws IOException {
 	req.findAncestorObject(Job.class).checkPermission(Run.UPDATE);
 	Run run = req.findAncestorObject(Run.class);
 	if (run != null) {
 	    run.addAction(new PromoteAction());
 	    run.save();
-	    Stapler.getCurrentResponse().sendRedirect(
+	    rsp.sendRedirect(
 		req.getRequestURI().substring(0, req.getRequestURI().indexOf("parent/parent")));
 	}
     }
 
-    private class PromotedBuildsRunListener extends RunListener<Run> {
-	private PromotedBuildsRunListener() {
+    @Extension
+    public static class PromotedBuildsRunListener extends RunListener<Run> {
+	public PromotedBuildsRunListener() {
 	    super(Run.class);
 	}
 
