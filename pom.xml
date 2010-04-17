@@ -27,6 +27,7 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>copyartifact</artifactId>
         <version>[1.2,)</version>
+        <optional>true</optional>
       </dependency>
     </dependencies>
 </project>
