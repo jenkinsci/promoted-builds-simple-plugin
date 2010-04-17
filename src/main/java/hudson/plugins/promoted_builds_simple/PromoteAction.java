@@ -66,7 +66,7 @@ public class PromoteAction implements BuildBadgeAction {
 	    : Hudson.RESOURCE_PATH + "/images/16x16/" + icon;
     }
 
-    public List<PromotionLevel> getAllPromotionLevels() {
+    public static List<PromotionLevel> getAllPromotionLevels() {
 	return Hudson.getInstance().getPlugin(PromotedBuildsSimplePlugin.class).getLevels();
     }
 

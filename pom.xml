@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jvnet.hudson.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>1.318</version>
+        <version>1.324</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -21,4 +21,12 @@
         <email>alan.harder@sun.com</email>
       </developer>
     </developers>
+
+    <dependencies>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>copyartifact</artifactId>
+        <version>[1.2,)</version>
+      </dependency>
+    </dependencies>
 </project>

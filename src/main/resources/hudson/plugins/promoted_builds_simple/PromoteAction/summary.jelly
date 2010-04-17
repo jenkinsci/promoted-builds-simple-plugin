@@ -3,7 +3,7 @@
 <j:set var="canPromote" value="${h.hasPermission(it.project,updateRun)}"/>
 <j:set var="hasLevel" value="${it.level != null}"/>
 <j:if test="${canPromote or hasLevel}">
-  <t:summary icon="${h.ifThenElse(hasLevel,'star-gold.gif','star.gif')}">
+  <t:summary icon="${hasLevel ? 'star-gold.gif' : 'star.gif'}">
     <j:if test="${hasLevel}"><h4>${it.level}</h4></j:if>
     <j:if test="${canPromote}">
       <div id="promotemenu" class="yuimenu" style="width:16em">
