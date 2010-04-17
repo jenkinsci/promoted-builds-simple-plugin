@@ -56,8 +56,9 @@ public class PromoteAction implements BuildBadgeAction {
     /* Promotion details */
     @Exported public String getLevel() { return level; }
     @Exported public int getLevelValue() { return levelValue; }
+
     public String getIconPath() {
-	if (icon == null) return null;
+	if (icon == null || icon.startsWith("/")) return icon;
 	// Try plugin images dir, fallback to Hudson images dir
 	PluginWrapper wrapper =
 	    Hudson.getInstance().getPluginManager().getPlugin(PromotedBuildsSimplePlugin.class);
