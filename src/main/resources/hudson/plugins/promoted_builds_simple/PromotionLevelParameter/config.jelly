@@ -23,8 +23,19 @@ THE SOFTWARE.
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-<j:if test="${it.iconPath != null}">
-  <img src="${rootURL}${it.iconPath}" width="16" height="16"
-       alt="${it.level}" title="${it.level}"/>
-</j:if>
+  <f:entry title="${%Name}" field="name" help="/help/parameter/name.html">
+    <f:textbox/>
+  </f:entry>
+  <f:entry title="${%Default Level}">
+    <j:invokeStatic var="levels" className="hudson.plugins.promoted_builds_simple.PromoteAction"
+                                 method="getAllPromotionLevels"/>
+    <select name="defaultLevel" class="setting-input">
+      <j:forEach var="level" indexVar="i" items="${levels}">
+        <f:option value="${i+1}" selected="${instance.defaultLevel == i+1}">${level.name}</f:option>
+      </j:forEach>
+    </select>
+  </f:entry>
+  <f:entry title="${%Description}" field="description" help="/help/parameter/description.html">
+    <f:textarea/>
+  </f:entry>
 </j:jelly>

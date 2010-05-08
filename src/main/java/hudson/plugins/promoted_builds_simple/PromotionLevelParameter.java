@@ -23,47 +23,54 @@
  */
 package hudson.plugins.promoted_builds_simple;
 
-import hudson.EnvVars;
 import hudson.Extension;
-import hudson.model.Descriptor;
-import hudson.model.Run;
-import hudson.plugins.copyartifact.BuildSelector;
-import hudson.plugins.copyartifact.SimpleBuildSelectorDescriptor;
+import hudson.model.ParameterValue;
+import hudson.model.SimpleParameterDefinition;
+import hudson.model.StringParameterValue;
+import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
 
 /**
- * Build selector for Copy Artifacts plugin to copy from latest build
- * of a particular promotion level (or higher).
+ * Build parameter to select a promotion level from the list of configured levels.
  * @author Alan.Harder@sun.com
  */
-public class PromotedBuildSelector extends BuildSelector {
-    private static final String LEVEL_PARAM_NAME = "COPY_PROMOTION_LEVEL";
-    private int level;
+public class PromotionLevelParameter extends SimpleParameterDefinition {
+    private int defaultLevel;
 
     @DataBoundConstructor
-    public PromotedBuildSelector(int level) {
-        this.level = level;
+    public PromotionLevelParameter(String name, int defaultLevel, String description) {
+        super(name, description);
+        this.defaultLevel = defaultLevel;
     }
 
-    public int getLevel() {
-        return level;
+    public int getDefaultLevel() {
+        return defaultLevel;
     }
 
     @Override
-    public boolean isSelectable(Run<?,?> run, EnvVars env) {
-        PromoteAction pa = run.getAction(PromoteAction.class);
-        if (pa == null) return false;
-        int checkLevel = level;
-        if (checkLevel == 0) try {   // 0 means to select level from build parameter/environment
-            checkLevel = Integer.parseInt(env.get(LEVEL_PARAM_NAME));
-        } catch (NumberFormatException nfe) {
-            checkLevel = Integer.MAX_VALUE;
-        }
-        return pa.getLevelValue() >= checkLevel;
+    public ParameterValue getDefaultParameterValue() {
+        return new StringParameterValue(
+                getName(), Integer.toString(defaultLevel), getDescription());
+    }
+
+    @Override
+    public ParameterValue createValue(String value) {
+        return new StringParameterValue(getName(), value, getDescription());
+    }
+
+    @Override
+    public ParameterValue createValue(StaplerRequest req, JSONObject jo) {
+        StringParameterValue value = req.bindJSON(StringParameterValue.class, jo);
+        value.setDescription(getDescription());
+        return value;
     }
 
     @Extension
-    public static final Descriptor<BuildSelector> DESCRIPTOR =
-            new SimpleBuildSelectorDescriptor(
-                PromotedBuildSelector.class, Messages._PromotedBuildSelector_DisplayName());
+    public static class DescriptorImpl extends ParameterDescriptor {
+        @Override
+        public String getDisplayName() {
+            return Messages.PromotionLevelParameter_DisplayName();
+        }
+    }
 }
