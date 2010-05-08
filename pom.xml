@@ -11,7 +11,7 @@
     <artifactId>promoted-builds-simple</artifactId>
     <packaging>hpi</packaging>
     <name>Promoted Builds (Simple)</name>
-    <version>1.5</version>
+    <version>1.6-SNAPSHOT</version>
     <url>http://wiki.hudson-ci.org/display/HUDSON/Promoted+Builds+Simple+Plugin</url>
 
     <developers>
@@ -30,10 +30,4 @@
         <optional>true</optional>
       </dependency>
     </dependencies>
-
-  <scm>
-    <connection>scm:svn:https://guest@svn.dev.java.net/svn/hudson/tags/promoted-builds-simple-1.5</connection>
-    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/tags/promoted-builds-simple-1.5</developerConnection>
-    <url>https://hudson.dev.java.net/source/browse/hudson/tags/promoted-builds-simple-1.5</url>
-  </scm>
 </project>
