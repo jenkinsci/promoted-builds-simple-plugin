@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2004-2009, Sun Microsystems, Inc., Alan Harder
+ * Copyright (c) 2004-2010, Sun Microsystems, Inc., Alan Harder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package hudson.plugins.promoted_builds_simple;
 
 import hudson.Extension;
 import hudson.Plugin;
+import hudson.model.Descriptor;
 import hudson.model.Descriptor.FormException;
 import hudson.model.Job;
 import hudson.model.Result;
@@ -87,5 +88,15 @@ public class PromotedBuildsSimplePlugin extends Plugin {
 		run.addAction(new PromoteAction());
 	    }
 	}
+    }
+
+    @Extension public static Descriptor initBuildSelector() {
+        // Add BuildSelector extension if Copy Artifact plugin is present
+        try {
+            Class.forName("hudson.plugins.copyartifact.BuildSelector");
+            return PromotedBuildSelector.DESCRIPTOR;
+        } catch (ClassNotFoundException ignore) {
+            return null;
+        }
     }
 }

@@ -75,6 +75,7 @@ public class PromotedBuildsSimpleTest extends HudsonTestCase {
         WebClient wc = new WebClient();
         // Hudson sends 405 response for GET of build page.. deal with that:
         wc.setThrowExceptionOnFailingStatusCode(false);
+        wc.setPrintContentOnFailingStatusCode(false);
         HtmlForm form = wc.getPage(job, "build").getFormByName("parameters");
         assertTrue(form.getSelectByName("value").getOption(1).isDefaultSelected());
         assertTrue(form.getSelectByName("value").getOption(1).isSelected());
