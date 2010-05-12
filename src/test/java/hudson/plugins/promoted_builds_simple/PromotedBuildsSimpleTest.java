@@ -81,7 +81,7 @@ public class PromotedBuildsSimpleTest extends HudsonTestCase {
         form.getSelectByName("value").getOption(2).setSelected(true);
         submit(form);
         Queue.Item q = hudson.getQueue().getItem(job);
-        if (q != null) q.getFuture().wait();
+        if (q != null) q.getFuture().get();
         while (job.getLastBuild().isBuilding()) Thread.sleep(100);
         assertEquals("3", ceb.getEnvVars().get("PROMO"));
         job.getBuildersList().replace(ceb = new CaptureEnvironmentBuilder());
@@ -94,7 +94,7 @@ public class PromotedBuildsSimpleTest extends HudsonTestCase {
                                                 post.getRequestParameters().get(0)));
         wc.getPage(post);
         q = hudson.getQueue().getItem(job);
-        if (q != null) q.getFuture().wait();
+        if (q != null) q.getFuture().get();
         while (job.getLastBuild().isBuilding()) Thread.sleep(100);
         assertEquals("1", ceb.getEnvVars().get("PROMO"));
         job.getBuildersList().replace(ceb = new CaptureEnvironmentBuilder());
@@ -103,7 +103,7 @@ public class PromotedBuildsSimpleTest extends HudsonTestCase {
         CLI.main(new String[] {
             "-s", getURL().toString(), "build", job.getFullName(), "-p", "PROMO=5" });
         q = hudson.getQueue().getItem(job);
-        if (q != null) q.getFuture().wait();
+        if (q != null) q.getFuture().get();
         while (job.getLastBuild().isBuilding()) Thread.sleep(100);
         assertEquals("5", ceb.getEnvVars().get("PROMO"));
     }
