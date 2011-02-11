@@ -58,34 +58,34 @@ public class PromoteAction implements BuildBadgeAction {
     @Exported public int getLevelValue() { return levelValue; }
 
     public String getIconPath() {
-	if (icon == null || icon.startsWith("/")) return icon;
-	// Try plugin images dir, fallback to main images dir
-	PluginWrapper wrapper =
-	    Hudson.getInstance().getPluginManager().getPlugin(PromotedBuildsSimplePlugin.class);
-	return new File(wrapper.baseResourceURL.getPath() + "/images/" + icon).exists()
-	    ? "/plugin/" + wrapper.getShortName() + "/images/" + icon
-	    : Hudson.RESOURCE_PATH + "/images/16x16/" + icon;
+        if (icon == null || icon.startsWith("/")) return icon;
+        // Try plugin images dir, fallback to main images dir
+        PluginWrapper wrapper =
+            Hudson.getInstance().getPluginManager().getPlugin(PromotedBuildsSimplePlugin.class);
+        return new File(wrapper.baseResourceURL.getPath() + "/images/" + icon).exists()
+            ? "/plugin/" + wrapper.getShortName() + "/images/" + icon
+            : Hudson.RESOURCE_PATH + "/images/16x16/" + icon;
     }
 
     public static List<PromotionLevel> getAllPromotionLevels() {
-	return Hudson.getInstance().getPlugin(PromotedBuildsSimplePlugin.class).getLevels();
+        return Hudson.getInstance().getPlugin(PromotedBuildsSimplePlugin.class).getLevels();
     }
 
     /* Save change to promotion level for this build and redirect back to build page */
     public void doIndex(StaplerRequest req, StaplerResponse rsp)
-	    throws IOException, ServletException {
-	req.findAncestorObject(Job.class).checkPermission(Run.UPDATE);
-	levelValue = Integer.parseInt(req.getParameter("level"));
-	if (levelValue == 0) {
-	    level = icon = null;
-	    req.findAncestorObject(Run.class).save();
-	} else {
-	    PromotionLevel src = getAllPromotionLevels().get(levelValue - 1);
-	    level = src.getName();
-	    icon = src.getIcon();
-	    // Mark as keep-forever when promoting; this also does save()
-	    req.findAncestorObject(Run.class).keepLog(true);
-	}
-	rsp.forwardToPreviousPage(req);
+            throws IOException, ServletException {
+        req.findAncestorObject(Job.class).checkPermission(Run.UPDATE);
+        levelValue = Integer.parseInt(req.getParameter("level"));
+        if (levelValue == 0) {
+            level = icon = null;
+            req.findAncestorObject(Run.class).save();
+        } else {
+            PromotionLevel src = getAllPromotionLevels().get(levelValue - 1);
+            level = src.getName();
+            icon = src.getIcon();
+            // Mark as keep-forever when promoting; this also does save()
+            req.findAncestorObject(Run.class).keepLog(true);
+        }
+        rsp.forwardToPreviousPage(req);
     }
 }

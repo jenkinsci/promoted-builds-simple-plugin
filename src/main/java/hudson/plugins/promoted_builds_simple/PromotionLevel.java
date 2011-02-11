@@ -34,8 +34,8 @@ public class PromotionLevel {
 
     @DataBoundConstructor
     public PromotionLevel(String name, String icon) {
-	this.name = name;
-	this.icon = icon;
+        this.name = name;
+        this.icon = icon;
     }
 
     public String getName() { return name; }

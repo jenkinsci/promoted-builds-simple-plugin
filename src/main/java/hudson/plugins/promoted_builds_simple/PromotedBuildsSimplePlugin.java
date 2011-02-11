@@ -47,45 +47,45 @@ public class PromotedBuildsSimplePlugin extends Plugin {
     private List<PromotionLevel> levels = new ArrayList<PromotionLevel>();
 
     @Override public void start() throws Exception {
-	// Default levels (load() will replace these if customized)
-	levels.add(new PromotionLevel("QA build", "qa.gif"));
-	levels.add(new PromotionLevel("QA approved", "qa-green.gif"));
-	levels.add(new PromotionLevel("GA release", "ga.gif"));
-	load();
+        // Default levels (load() will replace these if customized)
+        levels.add(new PromotionLevel("QA build", "qa.gif"));
+        levels.add(new PromotionLevel("QA approved", "qa-green.gif"));
+        levels.add(new PromotionLevel("GA release", "ga.gif"));
+        load();
     }
 
     public List<PromotionLevel> getLevels() { return levels; }
 
     @Override public void configure(StaplerRequest req, JSONObject formData)
-	    throws IOException, ServletException, FormException {
-	levels.clear();
-	levels.addAll(req.bindJSONToList(PromotionLevel.class, formData.get("levels")));
-	save();
+            throws IOException, ServletException, FormException {
+        levels.clear();
+        levels.addAll(req.bindJSONToList(PromotionLevel.class, formData.get("levels")));
+        save();
     }
 
     public void doMakePromotable(StaplerRequest req, StaplerResponse rsp) throws IOException {
-	req.findAncestorObject(Job.class).checkPermission(Run.UPDATE);
-	Run run = req.findAncestorObject(Run.class);
-	if (run != null) {
-	    run.addAction(new PromoteAction());
-	    run.save();
-	    rsp.sendRedirect(
-		req.getRequestURI().substring(0, req.getRequestURI().indexOf("parent/parent")));
-	}
+        req.findAncestorObject(Job.class).checkPermission(Run.UPDATE);
+        Run run = req.findAncestorObject(Run.class);
+        if (run != null) {
+            run.addAction(new PromoteAction());
+            run.save();
+            rsp.sendRedirect(
+                req.getRequestURI().substring(0, req.getRequestURI().indexOf("parent/parent")));
+        }
     }
 
     @Extension
     public static class PromotedBuildsRunListener extends RunListener<Run> {
-	public PromotedBuildsRunListener() {
-	    super(Run.class);
-	}
+        public PromotedBuildsRunListener() {
+            super(Run.class);
+        }
 
-	@Override
-	public void onCompleted(Run run, TaskListener listener) {
-	    Result res = run.getResult();
-	    if (res != Result.FAILURE && res != Result.ABORTED) {
-		run.addAction(new PromoteAction());
-	    }
-	}
+        @Override
+        public void onCompleted(Run run, TaskListener listener) {
+            Result res = run.getResult();
+            if (res != Result.FAILURE && res != Result.ABORTED) {
+                run.addAction(new PromoteAction());
+            }
+        }
     }
 }
