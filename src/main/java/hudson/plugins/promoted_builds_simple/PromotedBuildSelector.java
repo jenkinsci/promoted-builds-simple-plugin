@@ -24,6 +24,7 @@
 package hudson.plugins.promoted_builds_simple;
 
 import hudson.EnvVars;
+import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.model.Run;
 import hudson.plugins.copyartifact.BuildSelector;
@@ -61,8 +62,7 @@ public class PromotedBuildSelector extends BuildSelector {
         return pa.getLevelValue() >= checkLevel;
     }
 
-    //@Extension -- added by Plugin class to avoid errors in log when Copy Artifact not present.
-    // use @Extension(optional=true) instead, when ready to make this plugin require Hudson 1.358+
+    @Extension(optional=true)
     public static final Descriptor<BuildSelector> DESCRIPTOR =
             new SimpleBuildSelectorDescriptor(
                 PromotedBuildSelector.class, Messages._PromotedBuildSelector_DisplayName());

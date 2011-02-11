@@ -25,7 +25,6 @@ package hudson.plugins.promoted_builds_simple;
 
 import hudson.Extension;
 import hudson.Plugin;
-import hudson.model.Descriptor;
 import hudson.model.Descriptor.FormException;
 import hudson.model.Job;
 import hudson.model.Result;
@@ -88,15 +87,5 @@ public class PromotedBuildsSimplePlugin extends Plugin {
 		run.addAction(new PromoteAction());
 	    }
 	}
-    }
-
-    @Extension public static Descriptor initBuildSelector() {
-        // Add BuildSelector extension if Copy Artifact plugin is present
-        try {
-            Class.forName("hudson.plugins.copyartifact.BuildSelector");
-            return PromotedBuildSelector.DESCRIPTOR;
-        } catch (ClassNotFoundException ignore) {
-            return null;
-        }
     }
 }
