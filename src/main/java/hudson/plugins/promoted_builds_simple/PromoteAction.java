@@ -39,7 +39,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 /**
  * Store promotion level for a build.
- * @author Alan.Harder@sun.com
+ * @author Alan Harder
  */
 @ExportedBean(defaultVisibility=2)
 public class PromoteAction implements BuildBadgeAction {
@@ -59,7 +59,7 @@ public class PromoteAction implements BuildBadgeAction {
 
     public String getIconPath() {
 	if (icon == null || icon.startsWith("/")) return icon;
-	// Try plugin images dir, fallback to Hudson images dir
+	// Try plugin images dir, fallback to main images dir
 	PluginWrapper wrapper =
 	    Hudson.getInstance().getPluginManager().getPlugin(PromotedBuildsSimplePlugin.class);
 	return new File(wrapper.baseResourceURL.getPath() + "/images/" + icon).exists()

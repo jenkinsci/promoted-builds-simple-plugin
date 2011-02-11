@@ -42,7 +42,7 @@ import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Simply add a link in the main page sidepanel.
- * @author Alan.Harder@sun.com
+ * @author Alan Harder
  */
 public class PromotedBuildsSimplePlugin extends Plugin {
     private List<PromotionLevel> levels = new ArrayList<PromotionLevel>();

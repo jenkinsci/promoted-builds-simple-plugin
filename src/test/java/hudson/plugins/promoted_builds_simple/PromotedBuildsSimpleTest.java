@@ -39,8 +39,8 @@ import org.jvnet.hudson.test.CaptureEnvironmentBuilder;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 /**
- * Test interaction of promoted-builds-simple plugin with Hudson core.
- * @author Alan.Harder@sun.com
+ * Test interaction of promoted-builds-simple plugin with Jenkins core.
+ * @author Alan Harder
  */
 public class PromotedBuildsSimpleTest extends HudsonTestCase {
 
@@ -73,7 +73,7 @@ public class PromotedBuildsSimpleTest extends HudsonTestCase {
 
         // Run via UI (HTML form)
         WebClient wc = new WebClient();
-        // Hudson sends 405 response for GET of build page.. deal with that:
+        // Jenkins sends 405 response for GET of build page.. deal with that:
         wc.setThrowExceptionOnFailingStatusCode(false);
         wc.setPrintContentOnFailingStatusCode(false);
         HtmlForm form = wc.getPage(job, "build").getFormByName("parameters");

@@ -33,7 +33,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 /**
  * Build selector for Copy Artifacts plugin to copy from latest build
  * of a particular promotion level (or higher).
- * @author Alan.Harder@sun.com
+ * @author Alan Harder
  */
 public class PromotedBuildSelector extends BuildSelector {
     private static final String LEVEL_PARAM_NAME = "COPY_PROMOTION_LEVEL";

@@ -27,7 +27,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Configured promotion level available for selection.
- * @author Alan.Harder@sun.com
+ * @author Alan Harder
  */
 public class PromotionLevel {
     private String name, icon;
