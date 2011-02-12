@@ -101,8 +101,13 @@ public class PromotedBuildsSimpleTest extends HudsonTestCase {
         job.getBuildersList().replace(ceb = new CaptureEnvironmentBuilder());
 
         // Run via CLI
-        CLI.main(new String[] {
-            "-s", getURL().toString(), "build", job.getFullName(), "-p", "PROMO=5" });
+        CLI cli = new CLI(getURL());
+        try {
+            assertEquals(0, cli.execute(
+                    new String[] { "build", job.getFullName(), "-p", "PROMO=5" }));
+        } finally {
+            cli.close();
+        }
         q = hudson.getQueue().getItem(job);
         if (q != null) q.getFuture().get();
         while (job.getLastBuild().isBuilding()) Thread.sleep(100);
@@ -120,6 +125,7 @@ public class PromotedBuildsSimpleTest extends HudsonTestCase {
         FreeStyleBuild build = job.scheduleBuild2(0, new UserCause()).get();
         PromoteAction pa = build.getAction(PromoteAction.class);
         WebClient wc = new WebClient();
+        wc.addRequestHeader("Referer", "/");
         wc.getPage(build, "promote/?level=4");
         assertEquals("foo", pa.getLevel());
         assertFalse("should not get marked \"keep forever\"", build.isKeepLog());
@@ -127,7 +133,7 @@ public class PromotedBuildsSimpleTest extends HudsonTestCase {
         assertEquals(2, pa.getLevelValue());
         assertTrue("should get marked \"keep forever\"", build.isKeepLog());
         wc.getPage(build, "promote/?level=0");
-        assertEquals("", pa.getLevel());
+        assertNull(pa.getLevel());
         // Up for debate whether demotion should auto-not-keep:
         assertTrue("demotion should not change \"keep\" setting", build.isKeepLog());
     }
