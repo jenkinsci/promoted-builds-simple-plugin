@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2004-2009, Sun Microsystems, Inc., Alan Harder
+ * Copyright (c) 2004-2011, Sun Microsystems, Inc., Alan Harder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -84,7 +84,10 @@ public class PromoteAction implements BuildBadgeAction {
             level = src.getName();
             icon = src.getIcon();
             // Mark as keep-forever when promoting; this also does save()
-            req.findAncestorObject(Run.class).keepLog(true);
+            if (src.isAutoKeep())
+                req.findAncestorObject(Run.class).keepLog(true);
+            else
+                req.findAncestorObject(Run.class).save();
         }
         rsp.forwardToPreviousPage(req);
     }

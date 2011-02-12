@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2004-2009, Sun Microsystems, Inc., Alan Harder
+ * Copyright (c) 2004-2011, Sun Microsystems, Inc., Alan Harder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,13 +31,23 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class PromotionLevel {
     private String name, icon;
+    private Boolean isAutoKeep;
 
     @DataBoundConstructor
-    public PromotionLevel(String name, String icon) {
+    public PromotionLevel(String name, String icon, boolean isAutoKeep) {
         this.name = name;
         this.icon = icon;
+        this.isAutoKeep = isAutoKeep;
     }
 
     public String getName() { return name; }
     public String getIcon() { return icon; }
+    public boolean isAutoKeep() { return isAutoKeep; }
+
+    // Default to true when upgrading from older versions
+    private Object readResolve() {
+        if (isAutoKeep == null)
+            isAutoKeep = Boolean.TRUE;
+        return this;
+    }
 }

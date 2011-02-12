@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2004-2010, Sun Microsystems, Inc., Alan Harder
+ * Copyright (c) 2004-2011, Sun Microsystems, Inc., Alan Harder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,7 @@ public class PromotedBuildsSimpleTest extends HudsonTestCase {
         FreeStyleProject job = createFreeStyleProject();
         FreeStyleBuild build = job.scheduleBuild2(0, new UserCause()).get();
         PromoteAction pa = build.getAction(PromoteAction.class);
-        assertNotNull("plugin adds action on all builds", pa);
+        assertNotNull("plugin should add action on all builds", pa);
         WebClient wc = new WebClient();
         wc.addRequestHeader("Referer", "/");
         wc.getPage(build, "promote/?level=3");
@@ -107,5 +107,28 @@ public class PromotedBuildsSimpleTest extends HudsonTestCase {
         if (q != null) q.getFuture().get();
         while (job.getLastBuild().isBuilding()) Thread.sleep(100);
         assertEquals("5", ceb.getEnvVars().get("PROMO"));
+    }
+
+    /**
+     * Test option to (or not) automatically mark a build as "keep forever" when promoting.
+     */
+    public void testAutoKeep() throws Exception {
+        // Add a level that does not auto-keep (default levels do)
+        ((PromotedBuildsSimplePlugin)hudson.getPlugin("promoted-builds-simple")).getLevels().add(
+                new PromotionLevel("foo", "foo.gif", false));
+        FreeStyleProject job = createFreeStyleProject();
+        FreeStyleBuild build = job.scheduleBuild2(0, new UserCause()).get();
+        PromoteAction pa = build.getAction(PromoteAction.class);
+        WebClient wc = new WebClient();
+        wc.getPage(build, "promote/?level=4");
+        assertEquals("foo", pa.getLevel());
+        assertFalse("should not get marked \"keep forever\"", build.isKeepLog());
+        wc.getPage(build, "promote/?level=2");
+        assertEquals(2, pa.getLevelValue());
+        assertTrue("should get marked \"keep forever\"", build.isKeepLog());
+        wc.getPage(build, "promote/?level=0");
+        assertEquals("", pa.getLevel());
+        // Up for debate whether demotion should auto-not-keep:
+        assertTrue("demotion should not change \"keep\" setting", build.isKeepLog());
     }
 }

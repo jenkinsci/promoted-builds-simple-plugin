@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2004-2010, Sun Microsystems, Inc., Alan Harder
+ * Copyright (c) 2004-2011, Sun Microsystems, Inc., Alan Harder
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,9 +48,9 @@ public class PromotedBuildsSimplePlugin extends Plugin {
 
     @Override public void start() throws Exception {
         // Default levels (load() will replace these if customized)
-        levels.add(new PromotionLevel("QA build", "qa.gif"));
-        levels.add(new PromotionLevel("QA approved", "qa-green.gif"));
-        levels.add(new PromotionLevel("GA release", "ga.gif"));
+        levels.add(new PromotionLevel("QA build", "qa.gif", true));
+        levels.add(new PromotionLevel("QA approved", "qa-green.gif", true));
+        levels.add(new PromotionLevel("GA release", "ga.gif", true));
         load();
     }
 

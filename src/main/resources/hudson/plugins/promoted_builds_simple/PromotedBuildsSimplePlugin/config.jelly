@@ -1,7 +1,7 @@
 <!--
 The MIT License
 
-Copyright (c) 2004-2010, Sun Microsystems, Inc., Alan Harder
+Copyright (c) 2004-2011, Sun Microsystems, Inc., Alan Harder
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,10 @@ THE SOFTWARE.
           </f:entry>
           <f:entry title="${%Icon}" help="/plugin/promoted-builds-simple/help-icon.html">
             <f:textbox name="icon" value="${level.icon}"/>
+          </f:entry>
+          <f:entry help="/plugin/promoted-builds-simple/help-keep.html">
+            <f:checkbox name="isAutoKeep" checked="${level.autoKeep}"/>
+            <label class="attach-previous"> ${%Automatically Keep} </label>
           </f:entry>
           <f:entry><f:repeatableDeleteButton/></f:entry>
         </table>
