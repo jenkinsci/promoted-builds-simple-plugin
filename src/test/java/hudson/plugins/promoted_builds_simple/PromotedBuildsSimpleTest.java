@@ -26,16 +26,33 @@ package hudson.plugins.promoted_builds_simple;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebRequestSettings;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import hudson.EnvVars;
+import hudson.FilePath;
+import hudson.Launcher;
 import hudson.cli.CLI;
+import hudson.matrix.Axis;
+import hudson.matrix.AxisList;
+import hudson.matrix.MatrixBuild;
+import hudson.matrix.MatrixProject;
+import hudson.maven.MavenModuleSet;
+import hudson.maven.MavenModuleSetBuild;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
 import hudson.model.Cause.UserCause;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Queue;
+import hudson.model.Run;
+import hudson.plugins.copyartifact.BuildFilter;
+import hudson.tasks.Builder;
+import hudson.tasks.ArtifactArchiver;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import org.apache.commons.httpclient.NameValuePair;
 import org.jvnet.hudson.test.CaptureEnvironmentBuilder;
+import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 /**
@@ -136,5 +153,96 @@ public class PromotedBuildsSimpleTest extends HudsonTestCase {
         assertNull(pa.getLevel());
         // Up for debate whether demotion should auto-not-keep:
         assertTrue("demotion should not change \"keep\" setting", build.isKeepLog());
+    }
+
+    /**
+     * Test the implementation of copyartifact BuildSelector.
+     */
+    public void testBuildSelector() throws Exception {
+        FreeStyleProject job = createFreeStyleProject();
+        FreeStyleBuild build = job.scheduleBuild2(0, new UserCause()).get();
+        WebClient wc = new WebClient();
+        wc.addRequestHeader("Referer", "/");
+        wc.getPage(build, "promote/?level=2");
+        job.scheduleBuild2(0, new UserCause()).get(); // Build #2 so the latest build is not promoted
+        EnvVars env = new EnvVars();
+        BuildFilter filter = new BuildFilter();
+
+        PromotedBuildSelector pbs = new PromotedBuildSelector(2); // Exact match by level
+        assertEquals(1, pbs.getBuild(job, env, filter).getNumber());
+        pbs = new PromotedBuildSelector(1); // Lower threshold.. build #1 still matches
+        assertEquals(1, pbs.getBuild(job, env, filter).getNumber());
+        pbs = new PromotedBuildSelector(3); // Too high.. no match
+        assertNull(pbs.getBuild(job, env, filter));
+    }
+
+    /**
+     * Verify that the copyartifact BuildSelector can be used with a single maven module.
+     * ie, the build for a particular module should be found even though only the parent
+     * MavenModuleSetBuild has the promotion.
+     */
+    public void testBuildSelectorWithMavenModule() throws Exception {
+        configureDefaultMaven();
+        MavenModuleSet job = createMavenProject();
+        job.setGoals("clean package");
+        job.setScm(new ExtractResourceSCM(getClass().getResource("maven-job.zip")));
+        MavenModuleSetBuild build = job.scheduleBuild2(0, new UserCause()).get();
+        assertBuildStatusSuccess(build);
+        WebClient wc = new WebClient();
+        wc.addRequestHeader("Referer", "/");
+        wc.getPage(build, "promote/?level=2");
+        job.scheduleBuild2(0, new UserCause()).get(); // Build #2 so the latest build is not promoted
+        EnvVars env = new EnvVars();
+        BuildFilter filter = new BuildFilter();
+
+        PromotedBuildSelector pbs = new PromotedBuildSelector(2);
+        // Select from parent ModuleSet
+        assertEquals(1, pbs.getBuild(job, env, filter).getNumber());
+        // Select directly from submodule
+        Run<?,?> result = pbs.getBuild(job.getModule("org.jenkins-ci.plugins.test:moduleA"), env, filter);
+        assertNotNull("Should find promoted submodule build", result);
+        assertEquals(1, result.getNumber());
+    }
+
+    private static class TestBuilder extends Builder {
+        @Override
+        public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener)
+                throws InterruptedException, IOException {
+            // Make some files to archive as artifacts
+            FilePath ws = build.getWorkspace();
+            ws.child("foo.txt").touch(System.currentTimeMillis());
+            return true;
+        }
+    }
+
+    /**
+     * Verify that the copyartifact BuildSelector can be used with a single matrix configuration.
+     * ie, the build for a particular configuration should be found when only the parent
+     * project has the promotion.. promotion at configuration level can override parent promotion.
+     */
+    public void testBuildSelectorWithMatrixConfig() throws Exception {
+        MatrixProject job = createMatrixProject();
+        job.setAxes(new AxisList(new Axis("foo", "bar", "baz")));
+        job.getBuildersList().add(new TestBuilder());
+        job.getPublishersList().add(new ArtifactArchiver("*.txt", "", false));
+        MatrixBuild build = job.scheduleBuild2(0, new UserCause()).get();
+        assertBuildStatusSuccess(build);
+        WebClient wc = new WebClient();
+        wc.addRequestHeader("Referer", "/");
+        wc.getPage(build, "promote/?level=2");
+        job.scheduleBuild2(0, new UserCause()).get(); // Build #2 so the latest build is not promoted
+        EnvVars env = new EnvVars();
+        BuildFilter filter = new BuildFilter();
+
+        PromotedBuildSelector pbs = new PromotedBuildSelector(2);
+        // Select from parent MatrixBuild
+        assertEquals(1, pbs.getBuild(job, env, filter).getNumber());
+        // Select directly from configuration (MatrixRun)
+        Run<?,?> result = pbs.getBuild(job.getItem("foo=bar"), env, filter);
+        assertNotNull("Should find promoted configuration build", result);
+        assertEquals(1, result.getNumber());
+        // Now promote the particular configuration, only to level 1.. overrides parent promotion.
+        wc.getPage(job, "foo=bar/1/promote/?level=1");
+        assertNull(pbs.getBuild(job.getItem("foo=bar"), env, filter));
     }
 }

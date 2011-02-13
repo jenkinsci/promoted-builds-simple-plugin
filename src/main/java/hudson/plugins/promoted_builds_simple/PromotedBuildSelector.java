@@ -25,6 +25,9 @@ package hudson.plugins.promoted_builds_simple;
 
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.matrix.MatrixRun;
+import hudson.maven.MavenBuild;
+import hudson.maven.MavenModuleSetBuild;
 import hudson.model.Descriptor;
 import hudson.model.Run;
 import hudson.plugins.copyartifact.BuildSelector;
@@ -52,6 +55,13 @@ public class PromotedBuildSelector extends BuildSelector {
     @Override
     public boolean isSelectable(Run<?,?> run, EnvVars env) {
         PromoteAction pa = run.getAction(PromoteAction.class);
+        // Check for promotion in parent build for maven/matrix.
+        // MavenBuild does not trigger RunListener, so gets no PromoteAction.. always check parent.
+        // MatrixRun does get PromoteAction; check parent if no promotion at child level.
+        if (pa == null && run instanceof MavenBuild)
+            pa = ((MavenBuild)run).getModuleSetBuild().getAction(PromoteAction.class);
+        else if (run instanceof MatrixRun && (pa == null || pa.getLevel() == null))
+            pa = ((MatrixRun)run).getParentBuild().getAction(PromoteAction.class);
         if (pa == null) return false;
         int checkLevel = level;
         if (checkLevel == 0) try {   // 0 means to select level from build parameter/environment

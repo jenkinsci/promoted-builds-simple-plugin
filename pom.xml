@@ -28,6 +28,11 @@
         <version>[1.13,)</version>
         <optional>true</optional>
       </dependency>
+      <dependency>
+        <groupId>org.jenkins-ci.main</groupId>
+        <artifactId>maven-plugin</artifactId>
+        <optional>true</optional>
+      </dependency>
     </dependencies>
 
     <scm>
