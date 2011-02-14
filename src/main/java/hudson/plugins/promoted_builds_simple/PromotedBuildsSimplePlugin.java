@@ -24,8 +24,10 @@
 package hudson.plugins.promoted_builds_simple;
 
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Plugin;
 import hudson.model.Descriptor.FormException;
+import hudson.model.Hudson;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -36,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import net.sf.json.JSONObject;
+import org.apache.commons.fileupload.FileItem;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
@@ -72,6 +75,36 @@ public class PromotedBuildsSimplePlugin extends Plugin {
             rsp.sendRedirect(
                 req.getRequestURI().substring(0, req.getRequestURI().indexOf("parent/parent")));
         }
+    }
+
+    /**
+     * Receive file upload from startUpload.jelly.
+     * File is placed in $HUDSON_HOME/userContent directory.
+     */
+    public void doUpload(StaplerRequest req, StaplerResponse rsp)
+            throws IOException, ServletException, InterruptedException {
+        Hudson hudson = Hudson.getInstance();
+        hudson.checkPermission(Hudson.ADMINISTER);
+        FileItem file = req.getFileItem("badgeicon.file");
+        String error = null, filename = null;
+        if (file == null || file.getName().isEmpty())
+            error = Messages.Upload_NoFile();
+        else {
+            filename = "userContent/"
+                    // Sanitize given filename:
+                    + file.getName().replaceFirst(".*/", "").replaceAll("[^\\w.,;:()#@!=+-]", "_");
+            FilePath imageFile = hudson.getRootPath().child(filename);
+            if (imageFile.exists())
+                error = Messages.Upload_DupName();
+            else {
+                imageFile.copyFrom(file.getInputStream());
+                imageFile.chmod(0644);
+            }
+        }
+        rsp.setContentType("text/html");
+        rsp.getWriter().println(
+                (error != null ? error : Messages.Upload_Uploaded("<tt>/" + filename + "</tt>"))
+                + " <a href=\"javascript:history.back()\">" + Messages.Upload_Back() + "</a>");
     }
 
     @Extension
