@@ -79,7 +79,7 @@ public class PromotedBuildsSimplePlugin extends Plugin {
 
     /**
      * Receive file upload from startUpload.jelly.
-     * File is placed in $HUDSON_HOME/userContent directory.
+     * File is placed in $JENKINS_HOME/userContent directory.
      */
     public void doUpload(StaplerRequest req, StaplerResponse rsp)
             throws IOException, ServletException, InterruptedException {
