@@ -26,11 +26,12 @@ THE SOFTWARE.
 <j:getStatic var="updateRun" className="hudson.model.Run" field="UPDATE"/>
 <j:set var="canPromote" value="${h.hasPermission(it.project,updateRun)}"/>
 <j:set var="hasLevel" value="${it.level != null}"/>
-<j:if test="${canPromote or hasLevel}">
+<j:set var="hasHistory" value="${it.causes != null and it.causes.size() > 0}"/>
+<j:if test="${canPromote or hasLevel or hasHistory}">
   <t:summary icon="${hasLevel ? 'star-gold.gif' : 'star.gif'}">
     <j:if test="${hasLevel}"><h4>${it.level}</h4></j:if>
     <j:if test="${canPromote}">
-      <div id="promotemenu" class="yuimenu" style="width:16em">
+      <div id="promotemenu" class="yuimenu" style="width:16em;float:left">
         <div class="bd"></div>
       </div>
       <script language="javascript">// &lt;![CDATA[
@@ -61,6 +62,22 @@ THE SOFTWARE.
       });
       // ]]&gt;</script>
     </j:if>
+	<j:if test="${hasHistory}">
+		<div style="float:left; margin-left: 30px">
+		<b>Promotion History</b>
+		<table>
+		<j:forEach var="cause" items="${it.causes}">
+			<j:set var="hasHistoryLevel" value="${cause.levelValue > 0}"/>
+			<tr>
+				<td><img src="${Hudson.RESOURCE_PATH}/images/16x16/${hasHistoryLevel ? 'star-gold.gif' : 'star.gif'}"/>
+					${cause.levelName}</td>
+				<td>${cause.getDate()}</td>
+				<td>${cause.getUserName()}</td>
+			</tr>
+		</j:forEach>
+		</table>
+		</div>
+	</j:if>
   </t:summary>
 </j:if>
 </j:jelly>
