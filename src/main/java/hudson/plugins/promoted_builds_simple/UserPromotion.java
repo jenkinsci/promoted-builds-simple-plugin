@@ -39,102 +39,90 @@ import java.util.logging.Logger;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.Stapler;
 
+public class UserPromotion extends UserProperty implements Action {
 
-public class UserPromotion extends UserProperty implements Action
-{
-	private List<PromoteCause> promotions = null;
+    private List<PromoteCause> promotions = null;
 
-	@DataBoundConstructor
-	@SuppressWarnings("LeakingThisInConstructor")
-	public UserPromotion (User u) 
-	{
-		this.user = u;
-		this.promotions = new ArrayList<PromoteCause>();
-	}
+    @DataBoundConstructor
+    @SuppressWarnings("LeakingThisInConstructor")
+    public UserPromotion(User u) {
+        this.user = u;
+        this.promotions = new ArrayList<PromoteCause>();
+    }
 
-	public final String getRootPath()
-	{
-		return Stapler.getCurrentRequest().getRootPath();
-	}
+    public final String getRootPath() {
+        return Stapler.getCurrentRequest().getRootPath();
+    }
 
-	public List<PromoteCause> getPromotions()
-	{
-		return this.promotions;
-	}
+    public List<PromoteCause> getPromotions() {
+        return this.promotions;
+    }
 
-	public void addPromotion(PromoteCause promotion) throws IOException
-	{
-		promotions.add(promotion);
-		user.save();
-	}
+    public void addPromotion(PromoteCause promotion) throws IOException {
+        promotions.add(promotion);
+        user.save();
+    }
 
-	public void removePromotion(PromoteCause promotion) throws IOException
-	{
-		if (this.promotions != null)
-		{
-			promotions.remove(promotion);
-		}
-		user.save();
-	}
+    public void removePromotion(PromoteCause promotion) throws IOException {
+        if (this.promotions != null) {
+            promotions.remove(promotion);
+        }
+        user.save();
+    }
 
-	public User getUser() {
-		return user;
-	}
+    public User getUser() {
+        return user;
+    }
 
-	public String getIconFileName() {
-		return "star-gold.gif";
-	}
+    public String getIconFileName() {
+        return "star-gold.gif";
+    }
 
-	public String getDisplayName() {
-		return "Build Promotions";
-	}
+    public String getDisplayName() {
+        return "Build Promotions";
+    }
 
-	public String getUrlName() {
-		return "promotions";
-	}
+    public String getUrlName() {
+        return "promotions";
+    }
 
-	@Extension
-	public static final class DescriptorImpl extends UserPropertyDescriptor
-	{
-		@Override
-		public String getDisplayName() {
-			return "";
-		}
+    @Extension
+    public static final class DescriptorImpl extends UserPropertyDescriptor {
 
-		@Override
-		public UserProperty newInstance(User user) {
-			UserPromotion pc = new UserPromotion(user);
-System.out.println("getting new instance for " + user.getDisplayName());
-			return pc;
-		}
-	}
+        @Override
+        public String getDisplayName() {
+            return "";
+        }
 
-	@Extension
-	public static final class ListenerImpl extends RunListener<Run>
-	{
-		@Override
-		public void onDeleted(Run r)
-		{
-			PromoteAction pro = (PromoteAction)r.getAction(PromoteAction.class);
-			if (pro != null)
-			{
-				for (PromoteCause cause : pro.causes)
-				{
-					User user = Hudson.getInstance().getUser(cause.getUserName());
-					if (user != null)
-					{
-						UserPromotion promotion = user.getProperty(UserPromotion.class);
-						if (promotion != null)
-						{
-							try {
-								promotion.removePromotion(cause);
-							} catch (IOException ex) {
-								Logger.getLogger(UserPromotion.class.getName()).log(Level.SEVERE, null, ex);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+        @Override
+        public UserProperty newInstance(User user) {
+            UserPromotion pc = new UserPromotion(user);
+            System.out.println("getting new instance for " + user.getDisplayName());
+            return pc;
+        }
+    }
+
+    @Extension
+    public static final class ListenerImpl extends RunListener<Run> {
+
+        @Override
+        public void onDeleted(Run r) {
+            PromoteAction pro = (PromoteAction) r.getAction(PromoteAction.class);
+            if (pro != null) {
+                for (PromoteCause cause : pro.causes) {
+                    User user = Hudson.getInstance().getUser(cause.getUserName());
+                    if (user != null) {
+                        UserPromotion promotion = user.getProperty(UserPromotion.class);
+                        if (promotion != null) {
+                            try {
+                                promotion.removePromotion(cause);
+                            } catch (IOException ex) {
+                                Logger.getLogger(UserPromotion.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -30,6 +30,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Alan Harder
  */
 public class PromotionLevel {
+
     private String name, icon;
     private Boolean isAutoKeep;
 
@@ -40,14 +41,23 @@ public class PromotionLevel {
         this.isAutoKeep = isAutoKeep;
     }
 
-    public String getName() { return name; }
-    public String getIcon() { return icon; }
-    public boolean isAutoKeep() { return isAutoKeep; }
+    public String getName() {
+        return name;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public boolean isAutoKeep() {
+        return isAutoKeep;
+    }
 
     // Default to true when upgrading from older versions
     private Object readResolve() {
-        if (isAutoKeep == null)
+        if (isAutoKeep == null) {
             isAutoKeep = Boolean.TRUE;
+        }
         return this;
     }
 }

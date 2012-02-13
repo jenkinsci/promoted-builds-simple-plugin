@@ -34,59 +34,54 @@ import org.kohsuke.stapler.DataBoundConstructor;
  *
  * @author gcampb2
  */
-public class PromoteCause{
-	public int levelValue;
-	public String levelName;
-	private Date date;
-	private String jobName;
-	private int buildNumber;
-	private String user;
+public class PromoteCause {
 
-	@DataBoundConstructor
-	public PromoteCause(String user, Run r, int levelValue, String levelName)
-	{
-		this.date = new Date();
+    public int levelValue;
+    public String levelName;
+    private Date date;
+    private String jobName;
+    private int buildNumber;
+    private String user;
 
-		this.user = user;
+    @DataBoundConstructor
+    public PromoteCause(String user, Run r, int levelValue, String levelName) {
+        this.date = new Date();
 
-		this.levelName = levelName;
-		this.levelValue = levelValue;
+        this.user = user;
 
-		this.jobName = r.getParent().getName();
-		this.buildNumber = r.number;
-	}
+        this.levelName = levelName;
+        this.levelValue = levelValue;
 
-	public int getBuildNumber()
-	{
-		return buildNumber;
-	}
+        this.jobName = r.getParent().getName();
+        this.buildNumber = r.number;
+    }
 
-	public Job getJob()
-	{
-		return (Job)(Hudson.getInstance().getItem(jobName));
-	}
+    public int getBuildNumber() {
+        return buildNumber;
+    }
 
-	public Run getRun()
-	{
-		return ((Job)Hudson.getInstance().getItem(jobName)).getBuildByNumber(buildNumber);
-	}
+    public Job getJob() {
+        return (Job) (Hudson.getInstance().getItem(jobName));
+    }
 
-	public String getUserName()
-	{
-		if (user != null)
-			return Hudson.getInstance().getUser(user).getFullName();
-		return "";
-	}
+    public Run getRun() {
+        return ((Job) Hudson.getInstance().getItem(jobName)).getBuildByNumber(buildNumber);
+    }
 
-	public String getDate()
-	{
-		String fmt = "MMM dd, yyyy hh:mm aaa";
-		return getDate(fmt);
-	}
+    public String getUserName() {
+        if (user != null) {
+            return Hudson.getInstance().getUser(user).getFullName();
+        }
+        return "";
+    }
 
-	public String getDate(String format)
-	{
-	    SimpleDateFormat sdf = new SimpleDateFormat(format);
-		return sdf.format(date);
-	}
+    public String getDate() {
+        String fmt = "MMM dd, yyyy hh:mm aaa";
+        return getDate(fmt);
+    }
+
+    public String getDate(String format) {
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        return sdf.format(date);
+    }
 }

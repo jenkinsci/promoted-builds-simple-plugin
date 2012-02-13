@@ -30,49 +30,46 @@ import org.kohsuke.stapler.DataBoundConstructor;
  *
  * @author gcampb2
  */
-public class CleanupPolicy
-{
-	private int count =-1;
-	private PromotionLevel targetLevel = null;
-	private PromotionLevel triggerLevel = null;
+public class CleanupPolicy {
 
-	@DataBoundConstructor
-	public CleanupPolicy(PromotionLevel targetLevel, int count, PromotionLevel triggerLevel)
-	{
-		this.count = count;
-		this.targetLevel = targetLevel;
-		this.triggerLevel = triggerLevel;
-	}
+    private int count = -1;
+    private PromotionLevel targetLevel = null;
+    private PromotionLevel triggerLevel = null;
 
-	public CleanupPolicy(JSONObject json)
-	{
-		this.count = json.getInt("count");
-		this.targetLevel = PromoteAction.getAllPromotionLevels().get(json.getInt("targetLevel")-1);
-		this.triggerLevel = PromoteAction.getAllPromotionLevels().get(json.getInt("triggerLevel")-1);
-	}
+    @DataBoundConstructor
+    public CleanupPolicy(PromotionLevel targetLevel, int count, PromotionLevel triggerLevel) {
+        this.count = count;
+        this.targetLevel = targetLevel;
+        this.triggerLevel = triggerLevel;
+    }
 
+    public CleanupPolicy(JSONObject json) {
+        this.count = json.getInt("count");
+        this.targetLevel = PromoteAction.getAllPromotionLevels().get(json.getInt("targetLevel") - 1);
+        this.triggerLevel = PromoteAction.getAllPromotionLevels().get(json.getInt("triggerLevel") - 1);
+    }
 
-	public int getCount() {
-		return count;
-	}
+    public int getCount() {
+        return count;
+    }
 
-	public void setCount(int count) {
-		this.count = count;
-	}
+    public void setCount(int count) {
+        this.count = count;
+    }
 
-	public PromotionLevel getTargetLevel() {
-		return targetLevel;
-	}
+    public PromotionLevel getTargetLevel() {
+        return targetLevel;
+    }
 
-	public void setTargetLevel(PromotionLevel targetLevel) {
-		this.targetLevel = targetLevel;
-	}
+    public void setTargetLevel(PromotionLevel targetLevel) {
+        this.targetLevel = targetLevel;
+    }
 
-	public PromotionLevel getTriggerLevel() {
-		return triggerLevel;
-	}
+    public PromotionLevel getTriggerLevel() {
+        return triggerLevel;
+    }
 
-	public void setTriggerLevel(PromotionLevel triggerLevel) {
-		this.triggerLevel = triggerLevel;
-	}
+    public void setTriggerLevel(PromotionLevel triggerLevel) {
+        this.triggerLevel = triggerLevel;
+    }
 }

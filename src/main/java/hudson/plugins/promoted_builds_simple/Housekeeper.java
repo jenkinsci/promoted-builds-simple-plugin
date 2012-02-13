@@ -42,94 +42,86 @@ import org.kohsuke.stapler.StaplerRequest;
  *
  * @author gcampb2
  */
-public class Housekeeper  extends JobProperty<Job<?, ?>>
-{
-	private List<CleanupPolicy> policies;
+public class Housekeeper extends JobProperty<Job<?, ?>> {
 
-	private Housekeeper(StaplerRequest req, JSONObject json) throws Descriptor.FormException, IOException
-	{
-		Object raw = json.get("policies");
+    private List<CleanupPolicy> policies;
 
-		JSONArray array = null;
-		if (raw instanceof JSONArray)
-			array = json.getJSONArray("policies");
-		else
-		{
-			array = new JSONArray();
-			array.add((JSONObject)raw);
-		}
+    private Housekeeper(StaplerRequest req, JSONObject json)
+            throws Descriptor.FormException, IOException {
+        Object raw = json.get("policies");
 
-		for( Object o : array )
-		{
-			JSONObject c = (JSONObject)o;
-			addPolicy(new CleanupPolicy(c));
+        JSONArray array = null;
+        if (raw instanceof JSONArray) {
+            array = json.getJSONArray("policies");
+        } else {
+            array = new JSONArray();
+            array.add((JSONObject) raw);
         }
-	}
 
-	public List<CleanupPolicy> getPolicies() {
-		return policies;
-	}
+        for (Object o : array) {
+            JSONObject c = (JSONObject) o;
+            addPolicy(new CleanupPolicy(c));
+        }
+    }
 
-	public void setPolicies(List<CleanupPolicy> policies) {
-		this.policies = policies;
-	}
+    public List<CleanupPolicy> getPolicies() {
+        return policies;
+    }
 
-	public final void addPolicy(CleanupPolicy policy)
-	{
-		if (this.policies == null)
-			this.policies = new ArrayList<CleanupPolicy>();
-		
-		this.policies.add(policy);
-	}
+    public void setPolicies(List<CleanupPolicy> policies) {
+        this.policies = policies;
+    }
 
-	public void clean(StaplerRequest req, PromotionLevel newPromotion) throws IOException
-	{
-		Job job = req.findAncestorObject(Job.class);
-		Run run = req.findAncestorObject(Run.class);
+    public final void addPolicy(CleanupPolicy policy) {
+        if (this.policies == null) {
+            this.policies = new ArrayList<CleanupPolicy>();
+        }
 
-		for (CleanupPolicy p : policies)
-		{
-			if (p.getTriggerLevel().getName().equals(newPromotion.getName()))
-			{
-				int skip = p.getCount();
-				RunList rl = job.getBuilds();
-				for (ListIterator itr = rl.listIterator(rl.indexOf(run)); itr.hasNext();)
-				{
-					Run old = (Run)itr.next();
-					PromoteAction oldPromote = (PromoteAction)old.getAction(PromoteAction.class);
-					if (oldPromote != null && oldPromote.getLevel() != null)
-					{
-						if (skip > 0 && oldPromote.getLevel().equals(newPromotion.getName()))
-						{
-							skip --;
-						}
-						else if (oldPromote.getLevel().equals(p.getTargetLevel().getName()))
-						{
-							old.keepLog(false);
-						}
-					}
-				}
-			}
-		}
-	}
+        this.policies.add(policy);
+    }
 
-	@Extension
-    public static class DescriptorImpl extends JobPropertyDescriptor {
+    public void clean(StaplerRequest req, PromotionLevel newPromotion)
+            throws IOException {
+        Job job = req.findAncestorObject(Job.class);
+        Run run = req.findAncestorObject(Run.class);
 
-		@Override
-		public String getDisplayName() {
-			return "Promoted Build cleanup";
-		}
-
-		@Override
-        public Housekeeper newInstance(StaplerRequest req, JSONObject json) throws Descriptor.FormException {
-            try {
-                if(json.has("cleanupPromotions"))
-                    return new Housekeeper(req, json.getJSONObject("cleanupPromotions"));
-                return null;
-            } catch (IOException e) {
-                throw new FormException("Failed to create",e,null); // TODO:hmm
+        for (CleanupPolicy p : policies) {
+            if (p.getTriggerLevel().getName().equals(newPromotion.getName())) {
+                int skip = p.getCount();
+                RunList rl = job.getBuilds();
+                for (ListIterator itr = rl.listIterator(rl.indexOf(run)); itr.hasNext();) {
+                    Run old = (Run) itr.next();
+                    PromoteAction oldPromote = (PromoteAction) old.getAction(PromoteAction.class);
+                    if (oldPromote != null && oldPromote.getLevel() != null) {
+                        if (skip > 0 && oldPromote.getLevel().equals(newPromotion.getName())) {
+                            skip--;
+                        } else if (oldPromote.getLevel().equals(p.getTargetLevel().getName())) {
+                            old.keepLog(false);
+                        }
+                    }
+                }
             }
         }
-	}
+    }
+
+    @Extension
+    public static class DescriptorImpl extends JobPropertyDescriptor {
+
+        @Override
+        public String getDisplayName() {
+            return "Promoted Build cleanup";
+        }
+
+        @Override
+        public Housekeeper newInstance(StaplerRequest req, JSONObject json) throws Descriptor.FormException {
+            try {
+                if (json.has("cleanupPromotions")) {
+                    return new Housekeeper(req, json.getJSONObject("cleanupPromotions"));
+                }
+                return null;
+            } catch (IOException e) {
+                throw new FormException("Failed to create", e, null); // TODO:hmm
+            }
+        }
+    }
 }
