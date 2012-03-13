@@ -52,7 +52,7 @@ public class Housekeeper extends JobProperty<Job<?, ?>> {
 
         JSONArray array = null;
         if (raw instanceof JSONArray) {
-            array = json.getJSONArray("policies");
+            array = (JSONArray)raw;
         } else {
             array = new JSONArray();
             array.add((JSONObject) raw);
@@ -85,9 +85,9 @@ public class Housekeeper extends JobProperty<Job<?, ?>> {
         Job job = req.findAncestorObject(Job.class);
         Run run = req.findAncestorObject(Run.class);
 
-        for (CleanupPolicy p : policies) {
-            if (p.getTriggerLevel().getName().equals(newPromotion.getName())) {
-                int skip = p.getCount();
+        for (CleanupPolicy policy : policies) {
+            if (policy.getTriggerLevel().getName().equals(newPromotion.getName())) {
+                int skip = policy.getCount();
                 RunList rl = job.getBuilds();
                 for (ListIterator itr = rl.listIterator(rl.indexOf(run)); itr.hasNext();) {
                     Run old = (Run) itr.next();
@@ -95,7 +95,7 @@ public class Housekeeper extends JobProperty<Job<?, ?>> {
                     if (oldPromote != null && oldPromote.getLevel() != null) {
                         if (skip > 0 && oldPromote.getLevel().equals(newPromotion.getName())) {
                             skip--;
-                        } else if (oldPromote.getLevel().equals(p.getTargetLevel().getName())) {
+                        } else if (oldPromote.getLevel().equals(policy.getTargetLevel().getName())) {
                             old.keepLog(false);
                         }
                     }

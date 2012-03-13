@@ -97,12 +97,14 @@ public class PromoteAction implements BuildBadgeAction {
     /* Save change to promotion level for this build and redirect back to build page */
     public void doIndex(StaplerRequest req, StaplerResponse rsp)
             throws IOException, ServletException {
+
+        Job j = req.findAncestorObject(Job.class);
+        j.checkPermission(Run.UPDATE);
+
         if (this.causes == null) {
             this.causes = new ArrayList<PromoteCause>();
         }
 
-        Job j = req.findAncestorObject(Job.class);
-        j.checkPermission(Run.UPDATE);
         Run run = req.findAncestorObject(Run.class);
         levelValue = Integer.parseInt(req.getParameter("level"));
         PromotionLevel src = null;
