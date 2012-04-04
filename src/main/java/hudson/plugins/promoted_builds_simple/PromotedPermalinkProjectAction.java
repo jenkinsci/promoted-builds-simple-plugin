@@ -144,15 +144,15 @@ public class PromotedPermalinkProjectAction implements PermalinkProjectAction {
     }
 
     public String getIconFileName() {
-        return "star.gif";
+        return null;
     }
 
     public String getDisplayName() {
-        return "Last Promoted";
+        return "";
     }
 
     public String getUrlName() {
-        return "promoted";
+        return null;
     }
 
     @Extension
