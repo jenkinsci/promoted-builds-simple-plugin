@@ -24,6 +24,7 @@
 package hudson.plugins.promoted_builds_simple;
 
 import hudson.PluginWrapper;
+import hudson.model.AbstractProject;
 import hudson.model.BuildBadgeAction;
 import hudson.model.Hudson;
 import hudson.model.Job;
@@ -32,7 +33,6 @@ import hudson.model.User;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.servlet.ServletException;
 import org.kohsuke.stapler.StaplerRequest;
@@ -124,6 +124,14 @@ public class PromoteAction implements BuildBadgeAction {
 
         boolean skip = false;
         String user = Hudson.getAuthentication().getName();
+
+        PromotedPermalinkProjectAction permalinkAction = (PromotedPermalinkProjectAction) j.getAction(PromotedPermalinkProjectAction.class);
+        if (permalinkAction == null) {
+            permalinkAction = new PromotedPermalinkProjectAction((AbstractProject) j);
+        }
+        permalinkAction.registerPromotion(level, run.number);
+
+
         if (!this.causes.isEmpty()) {
             PromoteCause last = this.causes.get(this.causes.size() - 1);
             if ((last.levelName == null && level == null)
