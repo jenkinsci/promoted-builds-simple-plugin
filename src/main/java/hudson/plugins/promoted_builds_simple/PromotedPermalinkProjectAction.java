@@ -25,12 +25,9 @@ package hudson.plugins.promoted_builds_simple;
 
 import hudson.Extension;
 import hudson.model.AbstractProject;
-import hudson.model.Hudson;
 import hudson.model.Job;
 import hudson.model.PermalinkProjectAction;
-import hudson.model.Project;
 import hudson.model.Run;
-import hudson.model.listeners.ItemListener;
 import hudson.model.listeners.RunListener;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +40,7 @@ import java.util.Map.Entry;
  *
  * @author gcampb2
  */
-public class PromotedPermalinkProjectAction implements PermalinkProjectAction {
+public final class PromotedPermalinkProjectAction implements PermalinkProjectAction {
 
     AbstractProject project;
     Map<String, List<Integer>> promotions;
@@ -51,6 +48,16 @@ public class PromotedPermalinkProjectAction implements PermalinkProjectAction {
     PromotedPermalinkProjectAction(AbstractProject target) {
         this.project = target;
         promotions = (Map) new HashMap<String, ArrayList<Integer>>();
+
+        Iterator<Run> itr = project.getBuilds().iterator();
+        while (itr.hasNext()) {
+            Run run = itr.next();
+            PromoteAction promotion = run.getAction(PromoteAction.class);
+            if (promotion != null) {
+                registerPromotionAtEnd(promotion.getLevel(), run.number);
+            }
+        }
+
     }
 
     public Run<?, ?> resolve(String level) {
@@ -62,10 +69,6 @@ public class PromotedPermalinkProjectAction implements PermalinkProjectAction {
             }
         }
         return null;
-    }
-
-    public Map<String, List<Integer>> getPromotions() {
-        return promotions;
     }
 
     private List<Integer> preRegister(String level, int buildNumber) {
@@ -167,30 +170,6 @@ public class PromotedPermalinkProjectAction implements PermalinkProjectAction {
             Job j = r.getParent();
             PromotedPermalinkProjectAction permalinkAction = (PromotedPermalinkProjectAction) j.getAction(PromotedPermalinkProjectAction.class);
             permalinkAction.unregisterRun(r.number);
-        }
-    }
-
-    @Extension
-    public static final class ListenerImpl extends ItemListener {
-
-        @Override
-        public void onLoaded() {
-            Iterator<Project> projects = Hudson.getInstance().getProjects().iterator();
-            while (projects.hasNext()) {
-                Project project = projects.next();
-                PromotedPermalinkProjectAction permalinkAction = (PromotedPermalinkProjectAction) project.getAction(PromotedPermalinkProjectAction.class);
-                Iterator<Run> itr = project.getBuilds().iterator();
-                while (itr.hasNext()) {
-                    Run run = itr.next();
-                    PromoteAction promotion = run.getAction(PromoteAction.class);
-                    if (promotion != null) {
-                        if (permalinkAction == null) {
-                            permalinkAction = new PromotedPermalinkProjectAction((AbstractProject) project);
-                        }
-                        permalinkAction.registerPromotionAtEnd(promotion.getLevel(), run.number);
-                    }
-                }
-            }
         }
     }
 }
