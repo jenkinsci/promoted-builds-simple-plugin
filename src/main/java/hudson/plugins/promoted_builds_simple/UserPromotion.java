@@ -97,7 +97,6 @@ public class UserPromotion extends UserProperty implements Action {
         @Override
         public UserProperty newInstance(User user) {
             UserPromotion pc = new UserPromotion(user);
-            System.out.println("getting new instance for " + user.getDisplayName());
             return pc;
         }
     }
