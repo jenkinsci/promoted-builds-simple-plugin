@@ -59,8 +59,12 @@ public class UserPromotion extends UserProperty implements Action {
     }
 
     public void addPromotion(PromoteCause promotion) throws IOException {
-        promotions.add(promotion);
-        user.save();
+      if (this.promotions == null)
+      {
+        this.promotions = new ArrayList<PromoteCause>();
+      }
+      promotions.add(promotion);
+      user.save();
     }
 
     public void removePromotion(PromoteCause promotion) throws IOException {
