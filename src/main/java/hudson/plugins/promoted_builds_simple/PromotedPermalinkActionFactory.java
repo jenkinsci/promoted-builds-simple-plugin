@@ -23,41 +23,23 @@
  */
 package hudson.plugins.promoted_builds_simple;
 
-import org.kohsuke.stapler.DataBoundConstructor;
+import hudson.Extension;
+import hudson.model.AbstractProject;
+import hudson.model.TransientProjectActionFactory;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * Configured promotion level available for selection.
- * @author Alan Harder
+ *
+ * @author gcampb2
  */
-public class PromotionLevel {
+@Extension
+public class PromotedPermalinkActionFactory extends TransientProjectActionFactory {
 
-    private String name, icon;
-    private Boolean isAutoKeep;
-
-    @DataBoundConstructor
-    public PromotionLevel(String name, String icon, boolean isAutoKeep) {
-        this.name = name;
-        this.icon = icon;
-        this.isAutoKeep = isAutoKeep;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public boolean isAutoKeep() {
-        return isAutoKeep;
-    }
-
-    // Default to true when upgrading from older versions
-    private Object readResolve() {
-        if (isAutoKeep == null) {
-            isAutoKeep = Boolean.TRUE;
-        }
-        return this;
+    @Override
+    public Collection<PromotedPermalinkProjectAction> createFor(AbstractProject target) {
+        ArrayList<PromotedPermalinkProjectAction> ta = new ArrayList<PromotedPermalinkProjectAction>();
+        ta.add(new PromotedPermalinkProjectAction(target));
+        return ta;
     }
 }

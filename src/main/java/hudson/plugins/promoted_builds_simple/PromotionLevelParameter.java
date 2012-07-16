@@ -36,6 +36,7 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Alan Harder
  */
 public class PromotionLevelParameter extends SimpleParameterDefinition {
+
     private int defaultLevel;
 
     @DataBoundConstructor
@@ -68,6 +69,7 @@ public class PromotionLevelParameter extends SimpleParameterDefinition {
 
     @Extension
     public static class DescriptorImpl extends ParameterDescriptor {
+
         @Override
         public String getDisplayName() {
             return Messages.PromotionLevelParameter_DisplayName();

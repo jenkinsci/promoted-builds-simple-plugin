@@ -23,41 +23,65 @@
  */
 package hudson.plugins.promoted_builds_simple;
 
+import hudson.model.Hudson;
+import hudson.model.Job;
+import hudson.model.Run;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Configured promotion level available for selection.
- * @author Alan Harder
+ *
+ * @author gcampb2
  */
-public class PromotionLevel {
+public class PromoteCause {
 
-    private String name, icon;
-    private Boolean isAutoKeep;
+    public int levelValue;
+    public String levelName;
+    private Date date;
+    private String jobName;
+    private int buildNumber;
+    private String user;
 
     @DataBoundConstructor
-    public PromotionLevel(String name, String icon, boolean isAutoKeep) {
-        this.name = name;
-        this.icon = icon;
-        this.isAutoKeep = isAutoKeep;
+    public PromoteCause(String user, Run r, int levelValue, String levelName) {
+        this.date = new Date();
+
+        this.user = user;
+
+        this.levelName = levelName;
+        this.levelValue = levelValue;
+
+        this.jobName = r.getParent().getName();
+        this.buildNumber = r.number;
     }
 
-    public String getName() {
-        return name;
+    public int getBuildNumber() {
+        return buildNumber;
     }
 
-    public String getIcon() {
-        return icon;
+    public Job getJob() {
+        return (Job) (Hudson.getInstance().getItem(jobName));
     }
 
-    public boolean isAutoKeep() {
-        return isAutoKeep;
+    public Run getRun() {
+        return ((Job) Hudson.getInstance().getItem(jobName)).getBuildByNumber(buildNumber);
     }
 
-    // Default to true when upgrading from older versions
-    private Object readResolve() {
-        if (isAutoKeep == null) {
-            isAutoKeep = Boolean.TRUE;
+    public String getUserName() {
+        if (user != null) {
+            return Hudson.getInstance().getUser(user).getFullName();
         }
-        return this;
+        return "";
+    }
+
+    public String getDate() {
+        String fmt = "MMM dd, yyyy hh:mm aaa";
+        return getDate(fmt);
+    }
+
+    public String getDate(String format) {
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        return sdf.format(date);
     }
 }

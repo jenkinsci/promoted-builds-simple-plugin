@@ -23,41 +23,53 @@
  */
 package hudson.plugins.promoted_builds_simple;
 
+import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Configured promotion level available for selection.
- * @author Alan Harder
+ *
+ * @author gcampb2
  */
-public class PromotionLevel {
+public class CleanupPolicy {
 
-    private String name, icon;
-    private Boolean isAutoKeep;
+    private int count = -1;
+    private PromotionLevel targetLevel = null;
+    private PromotionLevel triggerLevel = null;
 
     @DataBoundConstructor
-    public PromotionLevel(String name, String icon, boolean isAutoKeep) {
-        this.name = name;
-        this.icon = icon;
-        this.isAutoKeep = isAutoKeep;
+    public CleanupPolicy(PromotionLevel targetLevel, int count, PromotionLevel triggerLevel) {
+        this.count = count;
+        this.targetLevel = targetLevel;
+        this.triggerLevel = triggerLevel;
     }
 
-    public String getName() {
-        return name;
+    public CleanupPolicy(JSONObject json) {
+        this.count = json.getInt("count");
+        this.targetLevel = PromoteAction.getAllPromotionLevels().get(json.getInt("targetLevel") - 1);
+        this.triggerLevel = PromoteAction.getAllPromotionLevels().get(json.getInt("triggerLevel") - 1);
     }
 
-    public String getIcon() {
-        return icon;
+    public int getCount() {
+        return count;
     }
 
-    public boolean isAutoKeep() {
-        return isAutoKeep;
+    public void setCount(int count) {
+        this.count = count;
     }
 
-    // Default to true when upgrading from older versions
-    private Object readResolve() {
-        if (isAutoKeep == null) {
-            isAutoKeep = Boolean.TRUE;
-        }
-        return this;
+    public PromotionLevel getTargetLevel() {
+        return targetLevel;
+    }
+
+    public void setTargetLevel(PromotionLevel targetLevel) {
+        this.targetLevel = targetLevel;
+    }
+
+    public PromotionLevel getTriggerLevel() {
+        return triggerLevel;
+    }
+
+    public void setTriggerLevel(PromotionLevel triggerLevel) {
+        this.triggerLevel = triggerLevel;
     }
 }

@@ -1,0 +1,40 @@
+<!--
+The MIT License
+
+Copyright (c) 2004-2010, Sun Microsystems, Inc., Alan Harder
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+<div>
+	Promoting a build marks it "Keep Forever," which means it cannot be removed
+	by the normal housekeeping configured under "Discard Old Builds."<br/><br/>
+	This "Clean up" functionality allows you to set policies about when promoted
+	builds will be un-marked "Keep Forever."
+	<p>
+		Each policy consists of a "trigger level", a "target level", and a count.
+	</p>
+	<p>
+		Ex.<br/>
+		To make "QA Build" runs delete-able after three newer builds have been
+		promoted to "QA Build," then: target level=QA Build, count=3,  trigger level=QA Build<br/>
+		To make "QA Build" runs delete-able once a single newer build has been
+		promoted to "GA Release," then:  target level=QA Build, count=1, trigger level=GA Release<br/>
+
+	</p>
+</div>
