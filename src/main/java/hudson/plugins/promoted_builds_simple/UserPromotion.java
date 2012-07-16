@@ -111,7 +111,7 @@ public class UserPromotion extends UserProperty implements Action {
         @Override
         public void onDeleted(Run r) {
             PromoteAction pro = (PromoteAction) r.getAction(PromoteAction.class);
-            if (pro != null) {
+            if (pro != null && pro.causes != null) {
                 for (PromoteCause cause : pro.causes) {
                     User user = Hudson.getInstance().getUser(cause.getUserName());
                     if (user != null) {
