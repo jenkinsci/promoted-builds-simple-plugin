@@ -78,6 +78,8 @@ public class PromoteAction implements BuildBadgeAction {
         levelValue = Integer.parseInt(req.getParameter("level"));
         if (levelValue == 0) {
             level = icon = null;
+            // clear keepLog setting when the build demoted
+            req.findAncestorObject(Run.class).keepLog(false);
             req.findAncestorObject(Run.class).save();
         } else {
             PromotionLevel src = getAllPromotionLevels().get(levelValue - 1);
