@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.398</version>
+    <version>1.460</version>
   </parent>
   <artifactId>promoted-builds-simple</artifactId>
   <packaging>hpi</packaging>
@@ -17,6 +17,11 @@
       <name>Alan Harder</name>
     </developer>
   </developers>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.jdk>1.6</version.jdk>
+    <version.maven-hpi-plugin>1.74</version.maven-hpi-plugin>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -28,9 +33,22 @@
       <groupId>org.jenkins-ci.main</groupId>
       <artifactId>maven-plugin</artifactId>
       <optional>true</optional>
-      <version>[1.533,)</version>
+      <version>[1.73,)</version>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jenkins-ci.tools</groupId>
+        <artifactId>maven-hpi-plugin</artifactId>
+        <version>${version.maven-hpi-plugin}</version>
+        <configuration>
+          <source>${version.jdk}</source>
+          <target>${version.jdk}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <repositories>
     <repository>
       <id>repo.jenkins-ci.org</id>
