@@ -45,6 +45,7 @@ import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.plugins.copyartifact.BuildFilter;
+import hudson.plugins.copyartifact.CopyArtifact;
 import hudson.tasks.Builder;
 import hudson.tasks.ArtifactArchiver;
 import java.io.IOException;
@@ -52,6 +53,7 @@ import java.net.URL;
 import java.util.Arrays;
 import org.apache.commons.httpclient.NameValuePair;
 import org.jvnet.hudson.test.CaptureEnvironmentBuilder;
+import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.HudsonTestCase;
 
@@ -244,5 +246,36 @@ public class PromotedBuildsSimpleTest extends HudsonTestCase {
         // Now promote the particular configuration, only to level 1.. overrides parent promotion.
         wc.getPage(job, "foo=bar/1/promote/?level=1");
         assertNull(pbs.getBuild(job.getItem("foo=bar"), env, filter));
+    }
+    
+    /**
+     * Verify that the configuration of {@link PromotedBuildSelector}
+     * is displayed correctly and saved correctly.
+     * 
+     * @throws Exception
+     */
+    @Bug(29767)
+    public void testConfigurationForPromotedBuildSelector() throws Exception {
+        for (int i = 0; i <= PromoteAction.getAllPromotionLevels().size(); ++i) {
+            PromotedBuildSelector selector = new PromotedBuildSelector(i);
+            
+            FreeStyleProject p = createFreeStyleProject();
+            p.getBuildersList().add(new CopyArtifact(
+                    p.getFullName(),
+                    // "",             // parameter (for copyartifact >= 1.26)
+                    selector,
+                    "**/*",         // filter
+                    "",             // target
+                    false,          // flatten
+                    false           // optional
+            ));
+            configRoundtrip(p);
+            
+            p = hudson.getItemByFullName(p.getFullName(), FreeStyleProject.class);
+            assertEqualDataBoundBeans(
+                    selector,
+                    p.getBuildersList().get(CopyArtifact.class).getBuildSelector()
+            );
+        }
     }
 }
