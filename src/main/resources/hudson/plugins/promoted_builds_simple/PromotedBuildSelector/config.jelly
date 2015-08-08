@@ -28,9 +28,9 @@ THE SOFTWARE.
                                  method="getAllPromotionLevels"/>
     <select name="level" class="setting-input">
       <j:forEach var="level" indexVar="i" items="${levels}">
-        <f:option value="${i+1}" selected="${selector.level == i+1}">${level.name}</f:option>
+        <f:option value="${i+1}" selected="${instance.level == i+1}">${level.name}</f:option>
       </j:forEach>
-      <f:option value="0" selected="${selector.level == 0}">${%fromParameter}</f:option>
+      <f:option value="0" selected="${instance.level == 0}">${%fromParameter}</f:option>
     </select>
   </f:entry>
 </j:jelly>
